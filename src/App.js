@@ -15,12 +15,13 @@ class App extends React.Component {
           selectedCategory: {},
           activeCategory: '',
           activeBrand: '',
+          showPopover: false
         }
     }
 
     async componentDidMount() {
 
-      fetch("http://localhost:3000/categories")
+      fetch("/categories")
       .then(response => response.text())
       .then((result)=>{
         const data = JSON.parse(result);
@@ -40,7 +41,7 @@ class App extends React.Component {
         products: [],
         activeCategory: categories.cat3
       })
-      fetch(`http://localhost:3000/brand/${categories.cat3}`)
+      fetch(`/brand/${categories.cat3}`)
       .then(response => response.text())
       .then((result)=>{
         const data = JSON.parse(result);
@@ -60,7 +61,7 @@ class App extends React.Component {
         activeBrand: brand
       })
 
-      fetch(`http://localhost:3000/products/${brand}`)
+      fetch(`/products/${brand}`)
       .then(response => response.text())
       .then((result)=>{
         const data = JSON.parse(result);
@@ -95,6 +96,20 @@ class App extends React.Component {
       }
     }
 
+    async getProduct(brand, description) {
+      fetch(`/product/${brand}/${description}`)
+      .then(response => response.text())
+      .then((result)=>{
+        if(!result || result.length === 0) return false;
+        const data = JSON.parse(result);
+        this.setState({
+          productInfo: data[0],
+          showPopover: true
+        })
+      })
+      .catch((error)=>{
+      })
+    }
 
     async searchBrand(e) {
       const value = e.target.value.toLowerCase();
@@ -139,11 +154,18 @@ class App extends React.Component {
       const showProducts = ()=>{
         if(!this.state.productsLoading) { 
           return this.state.products.map((value, index) => {
-            return <p>{value.Atrributes['Product_DESC']}</p>
+            return <p onClick={this.getProduct.bind(this, value.Atrributes['Product Brand_DESC'], value.Atrributes['Product_DESC'])}>{value.Atrributes['Product_DESC']}</p>
           })
         } else {
           return <p>Loading...</p>
         }
+      }
+
+      const showPopover = ()=>{
+        if(this.state.showPopover && this.state.productInfo) return <div className='popover'>
+          {this.state.productInfo.description}
+          <img src={this.state.productInfo.images[0].sizes[0].url} />
+        </div>
       }
       
       const showCategories = ()=>{
@@ -170,9 +192,10 @@ class App extends React.Component {
 
         return (
             <div className="container">
+              {showPopover()}
                 <div className="categories col">
                   <h2>Categories</h2>
-                  <input type="text" value={this.state.cateogorySearch} onChange={this.searchCategory.bind(this)} />
+                  <input placeholder="Search..." type="text" value={this.state.cateogorySearch} onChange={this.searchCategory.bind(this)} />
                   <div className="content">
                     {showCategories()}
                   </div>
@@ -180,7 +203,7 @@ class App extends React.Component {
 
                 <div className="brands col">
                   <h2>Brands</h2>
-                  {this.state.brands.length ?  <input type="text" value={this.state.brandSearch} onChange={this.searchBrand.bind(this)} /> : ''}
+                  {this.state.brands.length ?  <input placeholder="Search..."  type="text" value={this.state.brandSearch} onChange={this.searchBrand.bind(this)} /> : ''}
                   <div className="content">
                     {showBrands()}
                   </div>
