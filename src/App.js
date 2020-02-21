@@ -20,7 +20,6 @@ class App extends React.Component {
     }
 
     async componentDidMount() {
-
       fetch("/categories")
       .then(response => response.text())
       .then((result)=>{
@@ -154,7 +153,7 @@ class App extends React.Component {
       const showProducts = ()=>{
         if(!this.state.productsLoading) { 
           return this.state.products.map((value, index) => {
-            return <p onClick={this.getProduct.bind(this, value.Atrributes['Product Brand_DESC'], value.Atrributes['Product_DESC'])}>{value.Atrributes['Product_DESC']}</p>
+            return <p>{value.Atrributes['Product_DESC']}</p>
           })
         } else {
           return <p>Loading...</p>
