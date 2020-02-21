@@ -20,7 +20,7 @@ class App extends React.Component {
     }
 
     async componentDidMount() {
-      fetch("/categories")
+      fetch("http://10.70.0.217:8080/categories")
       .then(response => response.text())
       .then((result)=>{
         const data = JSON.parse(result);
@@ -40,7 +40,7 @@ class App extends React.Component {
         products: [],
         activeCategory: categories.cat3
       })
-      fetch(`/brand/${categories.cat3}`)
+      fetch(`http://10.70.0.217:8080/brand/${categories.cat3}`)
       .then(response => response.text())
       .then((result)=>{
         const data = JSON.parse(result);
@@ -60,7 +60,7 @@ class App extends React.Component {
         activeBrand: brand
       })
 
-      fetch(`/products/${brand}`)
+      fetch(`http://10.70.0.217:8080/products/${brand}`)
       .then(response => response.text())
       .then((result)=>{
         const data = JSON.parse(result);
@@ -96,7 +96,7 @@ class App extends React.Component {
     }
 
     async getProduct(brand, description) {
-      fetch(`/product/${brand}/${description}`)
+      fetch(`http://10.70.0.217:8080/product/${brand}/${description}`)
       .then(response => response.text())
       .then((result)=>{
         if(!result || result.length === 0) return false;
@@ -153,7 +153,7 @@ class App extends React.Component {
       const showProducts = ()=>{
         if(!this.state.productsLoading) { 
           return this.state.products.map((value, index) => {
-            return <p>{value.Atrributes['Product_DESC']}</p>
+            return <p>{value.Atrributes['Product_DESC']} <span>{value.Atrributes['Upc12_ID']}</span></p>
           })
         } else {
           return <p>Loading...</p>
@@ -208,7 +208,7 @@ class App extends React.Component {
                   </div>
                 </div>
 
-                <div className="brands col">
+                <div className="products col">
                   <h2>Products</h2>
                   <div className="content">
                     {showProducts()}
